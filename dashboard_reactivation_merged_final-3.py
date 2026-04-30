@@ -421,10 +421,9 @@ st.markdown(
     f"""
     <div class="lc-header">
       <div>
-        <div class="lc-header-title">Fleet Reactivation Dashboard</div>
+        <div class="lc-header-title">EH5000 Fleet Reactivation</div>
         <div class="lc-header-subtitle">
-          Component &amp; Cost Analysis &mdash; {len(df)} trucks active
-          ({len(TOP19_DTS)} core by {core_filter_metric} + {len(extra_dts)} additional)
+          Component &amp; Cost Analysis by Truck
         </div>
       </div>
       {header_logo_html}
