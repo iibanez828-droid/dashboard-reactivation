@@ -261,24 +261,6 @@ hr{border:none;border-top:1px solid #EFEFEF;margin:18px 0;}
 #MainMenu,footer{visibility:hidden;}
 .lc-footer{margin-top:28px;padding:14px 0;border-top:1px solid #EFEFEF;display:flex;justify-content:space-between;align-items:center;}
 .lc-footer span{font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;color:#CCCCCC;letter-spacing:0.07em;text-transform:uppercase;}
-/* ─────────────────────────────────────────────
-   FIX HEADER STREAMLIT (ELIMINA BARRA BLANCA)
-   ───────────────────────────────────────────── */
-
-[data-testid="stHeader"] {
-    background: transparent !important;
-    height: 0px !important;
-}
-
-/* Oculta botones Share / GitHub */
-[data-testid="stToolbar"] {
-    display: none !important;
-}
-
-/* Sube tu contenido (ajusta el espacio que quedó) */
-.block-container {
-    padding-top: 0rem !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
