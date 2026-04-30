@@ -279,39 +279,14 @@ with col_toggle:
 
 
 # ─────────────────────────────────────────────────────────────────
-#  SIDEBAR
-# ─────────────────────────────────────────────────────────────────
-#st.set_page_config(layout="wide", initial_sidebar_state="expanded")
-
-# ─────────────────────────────────────────────────────────────────
-#  SIDEBAR TOGGLE (USANDO EL CONTROL NATIVO DE STREAMLIT)
-# ─────────────────────────────────────────────────────────────────
-
-if "sidebar_state" not in st.session_state:
-    st.session_state.sidebar_state = "expanded"  # o "collapsed"
-
-# Botón para abrir/cerrar
-toggle_col, _ = st.columns([1, 9])
-with toggle_col:
-    if st.button("☰"):
-        st.session_state.sidebar_state = (
-            "collapsed" if st.session_state.sidebar_state == "expanded" else "expanded"
-        )
-        st.rerun()
-
-# Aplicar estado del sidebar
-st.set_page_config(
-    layout="wide",
-    initial_sidebar_state=st.session_state.sidebar_state
-)
-
-# ─────────────────────────────────────────────────────────────────
-#  SIDEBAR (SIEMPRE EXISTE, SOLO CAMBIA SU ESTADO)
+#  SIDEBAR (NATIVO STREAMLIT)
 # ─────────────────────────────────────────────────────────────────
 
 with st.sidebar:
 
+    # ────────────────
     # LOGO
+    # ────────────────
     if LOGO_B64:
         st.markdown(
             f'<div class="sidebar-logo"><img src="data:image/webp;base64,{LOGO_B64}" alt="Landcros"/></div>',
@@ -322,6 +297,8 @@ with st.sidebar:
             '<div class="sidebar-logo"><b>LANDCROS</b></div>',
             unsafe_allow_html=True
         )
+
+    st.markdown("---")
 
     # ────────────────
     # THRESHOLDS
@@ -377,6 +354,13 @@ with st.sidebar:
     # ADDITIONAL TRUCKS
     # ────────────────
     st.markdown("### Additional Trucks")
+
+    st.markdown(
+        f'<p style="font-size:0.77rem;color:#888;margin-bottom:10px;">'
+        f"The core filter keeps the 19 trucks with the lowest <b>{core_filter_metric}</b>. "
+        "Trucks below are excluded — add them here to expand the analysis.</p>",
+        unsafe_allow_html=True,
+    )
 
     extra_dts = st.multiselect(
         "Include additional DTs",
