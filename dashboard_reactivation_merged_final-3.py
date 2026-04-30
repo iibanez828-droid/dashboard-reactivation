@@ -502,7 +502,7 @@ with tab_fleet:
         st.plotly_chart(fig_cost, use_container_width=True, config={"displayModeBar": False})
 
     with c2:
-         st.markdown(
+        st.markdown(
             '<div class="section-title">Components Required by Type</div>',
             unsafe_allow_html=True,
         )
