@@ -385,76 +385,15 @@ df.columns = df.columns.str.strip()
 #  Reads BB:BU formulas and uses the real referenced life column
 # ─────────────────────────────────────────────────────────────────
 
-import re
-from openpyxl import load_workbook
-from openpyxl.utils import column_index_from_string
-
-@st.cache_data
-def build_excel_formula_map(excel_path):
-    wb = load_workbook(excel_path, data_only=False)
-    ws = wb["Structural"]
-
-    # Row in Rules & Rate -> category name
-    rule_row_to_cat = {
-        2: "Hydraulic",
-        3: "Electrical",
-        4: "Final Drives",
-        5: "Engine",
-        6: "Body",
-    }
-
-    formula_map = {}
-
-    # BB:BU = Excel columns 54:73 / Python index 53:72
-    for flag_idx in range(53, 73):
-        flag_col = df_base.columns[flag_idx].strip()
-
-        formula = ws.cell(row=2, column=flag_idx + 1).value
-        match = re.search(r"\$B\$(\d+)\s*<=\s*([A-Z]+)\d+", str(formula))
-
-        if not match:
-            continue
-
-        rule_row = int(match.group(1))
-        life_excel_col = match.group(2)
-        life_idx = column_index_from_string(life_excel_col) - 1
-        life_col = df_base.columns[life_idx].strip()
-
-        cat = rule_row_to_cat.get(rule_row)
-
-        formula_map[flag_col] = {
-            "life_col": life_col,
-            "category": cat,
-            "formula": formula,
-        }
-
-    return formula_map
-
-
-EXCEL_FORMULA_MAP = build_excel_formula_map(str(EXCEL_PATH))
-
-# ─────────────────────────────────────────────────────────────────
-#  GENERATE FLAGS USING THE SAME LOGIC AS EXCEL
-# ─────────────────────────────────────────────────────────────────
-
 for flag_col, comp_name in FLAG_COL_TO_COMP.items():
+    life_col = COMP_LIFE_COL.get(comp_name)
+    cat      = COMP_CATEGORY.get(comp_name)
 
-    formula_info = EXCEL_FORMULA_MAP.get(flag_col)
-
-    if formula_info is None:
-        df[f"_flag_{comp_name}"] = 0
-        continue
-
-    life_col = formula_info["life_col"]
-    cat = formula_info["category"]
-
-    if life_col in df.columns and cat in thresholds:
+    if life_col and life_col in df.columns and cat in thresholds:
         thr = thresholds[cat]
-
-        df[f"_flag_{comp_name}"] = (
-            pd.to_numeric(df[life_col], errors="coerce").fillna(0) >= thr
-        ).astype(int)
+        df[f"_flag_{comp_name}"] = (df[life_col] >= thr).astype(int)
     else:
+        # 🚨 IMPORTANTE: no usar el flag original
         df[f"_flag_{comp_name}"] = 0
 
 # ─────────────────────────────────────────────────────────────────
