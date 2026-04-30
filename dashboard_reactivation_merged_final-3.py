@@ -281,105 +281,108 @@ with col_toggle:
 # ─────────────────────────────────────────────────────────────────
 #  SIDEBAR
 # ─────────────────────────────────────────────────────────────────
+#st.set_page_config(layout="wide", initial_sidebar_state="expanded")
 
-if st.session_state.show_sidebar:
-    with st.sidebar:
+# ─────────────────────────────────────────────────────────────────
+#  SIDEBAR TOGGLE (USANDO EL CONTROL NATIVO DE STREAMLIT)
+# ─────────────────────────────────────────────────────────────────
 
-        # LOGO
-        if LOGO_B64:
-            st.markdown(
-                f'<div class="sidebar-logo"><img src="data:image/webp;base64,{LOGO_B64}" alt="Landcros"/></div>',
-                unsafe_allow_html=True,
-            )
-        else:
-            st.markdown(
-                '<div class="sidebar-logo"><b>LANDCROS</b></div>',
-                unsafe_allow_html=True
-            )
+if "sidebar_state" not in st.session_state:
+    st.session_state.sidebar_state = "expanded"  # o "collapsed"
 
-        # ────────────────
-        # THRESHOLDS
-        # ────────────────
-        st.markdown("### Component Thresholds")
+# Botón para abrir/cerrar
+toggle_col, _ = st.columns([1, 9])
+with toggle_col:
+    if st.button("☰"):
+        st.session_state.sidebar_state = (
+            "collapsed" if st.session_state.sidebar_state == "expanded" else "expanded"
+        )
+        st.rerun()
 
-        t_hyd = st.slider("Hydraulic",    0.0, 1.0, CATEGORY_DEFAULTS["Hydraulic"],    0.01, format="%.2f")
-        t_ele = st.slider("Electrical",   0.0, 1.0, CATEGORY_DEFAULTS["Electrical"],   0.01, format="%.2f")
-        t_fd  = st.slider("Final Drives", 0.0, 1.0, CATEGORY_DEFAULTS["Final Drives"], 0.01, format="%.2f")
-        t_eng = st.slider("Engine",       0.0, 1.0, CATEGORY_DEFAULTS["Engine"],       0.01, format="%.2f")
-        t_bod = st.slider("Body",         0.0, 1.0, CATEGORY_DEFAULTS["Body"],         0.01, format="%.2f")
+# Aplicar estado del sidebar
+st.set_page_config(
+    layout="wide",
+    initial_sidebar_state=st.session_state.sidebar_state
+)
 
-        thresholds = {
-            "Hydraulic":    t_hyd,
-            "Electrical":   t_ele,
-            "Final Drives": t_fd,
-            "Engine":       t_eng,
-            "Body":         t_bod,
-        }
+# ─────────────────────────────────────────────────────────────────
+#  SIDEBAR (SIEMPRE EXISTE, SOLO CAMBIA SU ESTADO)
+# ─────────────────────────────────────────────────────────────────
 
-        st.markdown("---")
+with st.sidebar:
 
-        # ────────────────
-        # CORE FILTER
-        # ────────────────
-        st.markdown("### Core Truck Filter")
-
+    # LOGO
+    if LOGO_B64:
         st.markdown(
-            '<p style="font-size:0.77rem;color:#888;margin-bottom:10px;">'
-            "Select how the core group of 19 trucks is chosen from the Structural sheet.</p>",
+            f'<div class="sidebar-logo"><img src="data:image/webp;base64,{LOGO_B64}" alt="Landcros"/></div>',
             unsafe_allow_html=True,
         )
-
-        core_filter_metric = st.radio(
-            "Select first 19 trucks by",
-            options=["Weighted criteria", "Hours"],
-            index=0,
-            help="Both options select the 19 lowest values. Additional trucks can still be added below.",
-        )
-
-        core_sort_col = "Weighted criteria" if core_filter_metric == "Weighted criteria" else "Hours"
-
-        df_sorted_core = df_base.sort_values(
-            [core_sort_col, "Total_Cost"],
-            ascending=[True, True]
-        )
-
-        TOP19_DTS = df_sorted_core.head(19)["DT"].astype(int).tolist()
-        REST11_DTS = df_sorted_core.iloc[19:]["DT"].astype(int).tolist()
-
-        st.markdown("---")
-
-        # ────────────────
-        # ADDITIONAL TRUCKS
-        # ────────────────
-        st.markdown("### Additional Trucks")
-
+    else:
         st.markdown(
-            f'<p style="font-size:0.77rem;color:#888;margin-bottom:10px;">'
-            f"The core filter keeps the 19 trucks with the lowest <b>{core_filter_metric}</b>. "
-            "Trucks below are excluded — add them here to expand the analysis.</p>",
-            unsafe_allow_html=True,
+            '<div class="sidebar-logo"><b>LANDCROS</b></div>',
+            unsafe_allow_html=True
         )
 
-        extra_dts = st.multiselect(
-            "Include additional DTs",
-            options=[int(x) for x in REST11_DTS],
-            default=[],
-        )
+    # ────────────────
+    # THRESHOLDS
+    # ────────────────
+    st.markdown("### Component Thresholds")
 
-else:
-    # Sidebar oculto → mantener variables por defecto
-    thresholds = CATEGORY_DEFAULTS.copy()
-    core_filter_metric = "Weighted criteria"
+    t_hyd = st.slider("Hydraulic",    0.0, 1.0, CATEGORY_DEFAULTS["Hydraulic"],    0.01, format="%.2f")
+    t_ele = st.slider("Electrical",   0.0, 1.0, CATEGORY_DEFAULTS["Electrical"],   0.01, format="%.2f")
+    t_fd  = st.slider("Final Drives", 0.0, 1.0, CATEGORY_DEFAULTS["Final Drives"], 0.01, format="%.2f")
+    t_eng = st.slider("Engine",       0.0, 1.0, CATEGORY_DEFAULTS["Engine"],       0.01, format="%.2f")
+    t_bod = st.slider("Body",         0.0, 1.0, CATEGORY_DEFAULTS["Body"],         0.01, format="%.2f")
+
+    thresholds = {
+        "Hydraulic":    t_hyd,
+        "Electrical":   t_ele,
+        "Final Drives": t_fd,
+        "Engine":       t_eng,
+        "Body":         t_bod,
+    }
+
+    st.markdown("---")
+
+    # ────────────────
+    # CORE FILTER
+    # ────────────────
+    st.markdown("### Core Truck Filter")
+
+    st.markdown(
+        '<p style="font-size:0.77rem;color:#888;margin-bottom:10px;">'
+        "Select how the core group of 19 trucks is chosen from the Structural sheet.</p>",
+        unsafe_allow_html=True,
+    )
+
+    core_filter_metric = st.radio(
+        "Select first 19 trucks by",
+        options=["Weighted criteria", "Hours"],
+        index=0,
+    )
+
+    core_sort_col = "Weighted criteria" if core_filter_metric == "Weighted criteria" else "Hours"
 
     df_sorted_core = df_base.sort_values(
-        ["Weighted criteria", "Total_Cost"],
+        [core_sort_col, "Total_Cost"],
         ascending=[True, True]
     )
 
     TOP19_DTS = df_sorted_core.head(19)["DT"].astype(int).tolist()
     REST11_DTS = df_sorted_core.iloc[19:]["DT"].astype(int).tolist()
 
-    extra_dts = []
+    st.markdown("---")
+
+    # ────────────────
+    # ADDITIONAL TRUCKS
+    # ────────────────
+    st.markdown("### Additional Trucks")
+
+    extra_dts = st.multiselect(
+        "Include additional DTs",
+        options=[int(x) for x in REST11_DTS],
+        default=[],
+    )
 
 # -----------------------------------------------------------------
 #  DYNAMIC COMPONENT COSTS
