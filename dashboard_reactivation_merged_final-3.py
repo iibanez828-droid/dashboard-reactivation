@@ -258,7 +258,6 @@ section[data-testid="stSidebar"] > div > div > div > button {
 .sidebar-logo{display:flex;justify-content:center;padding:18px 16px 10px 16px;margin-bottom:10px;border-bottom:1px solid #333;}
 .sidebar-logo img{max-width:150px;}
 hr{border:none;border-top:1px solid #EFEFEF;margin:18px 0;}
-header{visibility:hidden;}
 #MainMenu,footer{visibility:hidden;}
 .lc-footer{margin-top:28px;padding:14px 0;border-top:1px solid #EFEFEF;display:flex;justify-content:space-between;align-items:center;}
 .lc-footer span{font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;color:#CCCCCC;letter-spacing:0.07em;text-transform:uppercase;}
