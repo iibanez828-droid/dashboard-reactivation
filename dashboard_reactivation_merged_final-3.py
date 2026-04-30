@@ -502,11 +502,6 @@ with tab_fleet:
         st.plotly_chart(fig_cost, use_container_width=True, config={"displayModeBar": False})
 
     with c2:
-        st.markdown(
-            '<div class="section-title">Components Required by Type</div>'
-            '<div class="threshold-note">Updated in real time by the threshold sliders in the sidebar.</div>',
-            unsafe_allow_html=True,
-        )
         comp_counts = {}
         for cn in FLAG_COL_TO_COMP.values():
             fk  = f"_flag_{cn}"
