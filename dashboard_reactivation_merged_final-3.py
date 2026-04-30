@@ -11,16 +11,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-st.markdown("""
-<style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-
-.block-container {
-    padding-top: 1rem;
-}
-</style>
-""", unsafe_allow_html=True)
 
 import pandas as pd
 import numpy as np
@@ -276,19 +266,6 @@ header{visibility:hidden;}
 """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────────
-#  SIDEBAR TOGGLE CONTROL (MANUAL)
-# ─────────────────────────────────────────────────────────────────
-
-if "show_sidebar" not in st.session_state:
-    st.session_state.show_sidebar = True
-
-col_toggle, _ = st.columns([1, 9])
-with col_toggle:
-    if st.button("☰ Filters", help="Show / hide filters"):
-        st.session_state.show_sidebar = not st.session_state.show_sidebar
-
-
-# ─────────────────────────────────────────────────────────────────
 #  SIDEBAR (NATIVO STREAMLIT)
 # ─────────────────────────────────────────────────────────────────
 
@@ -377,7 +354,6 @@ with st.sidebar:
         options=[int(x) for x in REST11_DTS],
         default=[],
     )
-
 # -----------------------------------------------------------------
 #  DYNAMIC COMPONENT COSTS
 # -----------------------------------------------------------------
