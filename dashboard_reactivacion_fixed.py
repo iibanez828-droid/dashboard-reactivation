@@ -5,7 +5,6 @@ st.markdown("""
         header {visibility: hidden;}
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
-        .stApp {margin-top: -80px;}
     </style>
 """, unsafe_allow_html=True)
 
