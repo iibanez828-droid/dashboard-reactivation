@@ -210,7 +210,24 @@ df_base["Total_Cost"] = df_base["Total Labour"] * CHM_RATE + df_base["Total cost
 # Default is Weighted criteria, but it can also be Hours.
 df_sorted_base = df_base.sort_values(["Weighted criteria", "Total_Cost"], ascending=[True, True])
 TOP19_DTS  = df_sorted_base.head(19)["DT"].astype(int).tolist()
-REST11_DTS = df_sorted_base.iloc[19:]["DT"].astype(int).tolist()
+# ─────────────────────────────────────────────────────────────────
+# CLEAN & VALIDATE DT COLUMN (FIX STREAMLIT ERROR)
+# ─────────────────────────────────────────────────────────────────
+
+dt_series = pd.to_numeric(df_sorted_base["DT"], errors="coerce")
+
+# Debug opcional (puedes dejarlo o quitarlo después)
+invalid_rows = df_sorted_base[dt_series.isna()]
+if not invalid_rows.empty:
+    print("⚠️ Filas con DT inválido encontradas:")
+    print(invalid_rows[["DT"]])
+
+# Validación estricta (evita errores silenciosos y desvíos de ±1)
+if dt_series.isna().any():
+    raise ValueError("Error: La columna DT contiene valores no válidos. Revisar Excel.")
+
+# Ahora sí, extracción segura
+REST11_DTS = dt_series.iloc[19:].astype(int).tolist()
 
 # ─────────────────────────────────────────────────────────────────
 #  CSS
