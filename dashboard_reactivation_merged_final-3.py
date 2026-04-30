@@ -448,7 +448,7 @@ header_logo_html = (
 )
 st.markdown(
     f"""
-    <div class="lc-header">
+    <div class="lc-header" style="margin-top:40px;">
       <div>
         <div class="lc-header-title">EH5000 Fleet Reactivation</div>
         <div class="lc-header-subtitle">
