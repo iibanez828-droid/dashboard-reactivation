@@ -82,11 +82,11 @@ COMP_CATEGORY = {
     "Hoist cylinder left":   "Hydraulic",
     "Steer cylinder right":  "Hydraulic",
     "Steer cylinder left":   "Hydraulic",
-    "Front strut right":     "Hydraulic",
-    "Rear strtus right":     "Hydraulic",
-    "Front strut left":      "Hydraulic",
-    "Rear strut right":      "Hydraulic",
-    "Rear strut left":       "Hydraulic",
+    "Front strut right":     "Strut",
+    "Rear strtus right":     "Strut",
+    "Front strut left":      "Strut",
+    "Rear strut right":      "Strut",
+    "Rear strut left":       "Strut",
     "Alternator":            "Electrical",
     "Eletrical motor right": "Electrical",
     "Eletrical motor left":  "Electrical",
@@ -296,13 +296,15 @@ with st.sidebar:
     t_fd  = st.slider("Final Drives", 0.0, 1.0, CATEGORY_DEFAULTS["Final Drives"], 0.01, format="%.2f")
     t_eng = st.slider("Engine",       0.0, 1.0, CATEGORY_DEFAULTS["Engine"],       0.01, format="%.2f")
     t_bod = st.slider("Body",         0.0, 1.0, CATEGORY_DEFAULTS["Body"],         0.01, format="%.2f")
-
+    t_strut = st.slider("Strut",         0.0, 1.0, CATEGORY_DEFAULTS["Strut"],         0.01, format="%.2f")
+    
     thresholds = {
         "Hydraulic":    t_hyd,
         "Electrical":   t_ele,
         "Final Drives": t_fd,
         "Engine":       t_eng,
         "Body":         t_bod,
+        "Strut":        t_strut,
     }
 
     st.markdown("---")
