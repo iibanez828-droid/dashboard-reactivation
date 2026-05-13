@@ -296,7 +296,7 @@ with st.sidebar:
     t_fd  = st.slider("Final Drives", 0.0, 1.0, CATEGORY_DEFAULTS["Final Drives"], 0.01, format="%.2f")
     t_eng = st.slider("Engine",       0.0, 1.0, CATEGORY_DEFAULTS["Engine"],       0.01, format="%.2f")
     t_bod = st.slider("Body",         0.0, 1.0, CATEGORY_DEFAULTS["Body"],         0.01, format="%.2f")
-    t_strut = st.slider("Strut",         0.0, 1.0, CATEGORY_DEFAULTS["Strut"],         0.01, format="%.2f")
+    t_strut = st.slider("Strut",      0.0, 1.0, CATEGORY_DEFAULTS["Strut"],         0.01, format="%.2f")
     
     thresholds = {
         "Hydraulic":    t_hyd,
