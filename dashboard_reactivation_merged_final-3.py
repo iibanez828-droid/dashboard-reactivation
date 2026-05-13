@@ -70,6 +70,7 @@ CATEGORY_DEFAULTS = {
     "Final Drives": float(rules.loc[2, "Percentages"]),  # 0.70
     "Engine":       float(rules.loc[3, "Percentages"]),  # 0.70
     "Body":         float(rules.loc[4, "Percentages"]),  # 0.70
+    "Strut":        float(rules.loc[4, "Percentages"]), 
 }
 
 # Component → category  (used to pick the right threshold per slider)
