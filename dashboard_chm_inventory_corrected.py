@@ -1401,7 +1401,7 @@ selected_inv_dt = st.selectbox(
         format_func=lambda x: f"DT {x}",
         key="inventory_dt_sel",
     )
-    truck_tmp = cerrejon_impact.copy()
+truck_tmp = cerrejon_impact.copy()
     truck_tmp["_truck_qty"] = pd.to_numeric(truck_tmp[selected_inv_dt], errors="coerce").fillna(0)
     truck_tmp["_truck_cost"] = truck_tmp["_truck_qty"] * pd.to_numeric(truck_tmp["Price 2026"], errors="coerce").fillna(0)
     truck_cat = _category_summary(truck_tmp, qty_col="_truck_qty", value_col="_truck_cost")
