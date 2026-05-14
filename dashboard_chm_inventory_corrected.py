@@ -1456,36 +1456,32 @@ with tab_inventory_total:
             ''',
             unsafe_allow_html=True
         )
-
     # ==========================================================
     # FILTER BY KIT NAME
     # ==========================================================
-    # ==========================================================
-# FILTER BY KIT NAME
-# ==========================================================
 
-# Detect kit-name column automatically
-possible_kit_cols = [
-    c for c in inv_tbl.columns
-    if "kit" in str(c).lower()
-    and "name" in str(c).lower()
-]
+    # Detect kit-name column automatically
+    possible_kit_cols = [
+        c for c in inv_tbl.columns
+        if "kit" in str(c).lower()
+        and "name" in str(c).lower()
+    ]
 
-if len(possible_kit_cols) > 0:
+    if len(possible_kit_cols) > 0:
 
-    kit_column = possible_kit_cols[0]
+        kit_column = possible_kit_cols[0]
 
-else:
+    else:
 
-    st.error("Kit name column not found in Kits sheet.")
-    st.stop()
+        st.error("Kit name column not found in Kits sheet.")
+        st.stop()
 
-# Clean kit names
-inv_tbl[kit_column] = (
-    inv_tbl[kit_column]
-    .astype(str)
-    .str.strip()
-)
+    # Clean kit names
+    inv_tbl[kit_column] = (
+        inv_tbl[kit_column]
+        .astype(str)
+        .str.strip()
+    )
 
     # Available kits
     available_kits = sorted(
@@ -1511,7 +1507,7 @@ inv_tbl[kit_column] = (
         if selected_kits
         else inv_tbl.copy()
     )
-
+   
     # ==========================================================
     # TABLE
     # ==========================================================
