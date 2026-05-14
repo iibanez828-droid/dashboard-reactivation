@@ -1068,7 +1068,7 @@ with tab_truck:
 #  TAB 3 — 
 
 
-with tab_kit_analysis:
+with tab_kits:
 
     st.markdown('<div class="section-title">Kit Analysis</div>', unsafe_allow_html=True)
 
