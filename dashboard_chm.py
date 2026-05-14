@@ -51,10 +51,13 @@ def load_data():
     rules       = pd.read_excel(EXCEL_PATH, sheet_name="Rules & Rate")
     labour_sht  = pd.read_excel(EXCEL_PATH, sheet_name="Labour")
     comp_costs  = pd.read_excel(EXCEL_PATH, sheet_name="Component $")
-    return structural, rules, labour_sht, comp_costs
+    cerrejon_impact = pd.read_excel(EXCEL_PATH, sheet_name="Cerrejon inventory impact")
+    component_impact = pd.read_excel(EXCEL_PATH, sheet_name="Component parts impact")
+    inventory_total = pd.read_excel(EXCEL_PATH, sheet_name="Inventory total")
+    return structural, rules, labour_sht, comp_costs, cerrejon_impact, component_impact, inventory_total
 
 LOGO_B64 = load_logo_b64()
-structural, rules, labour_sht, comp_costs = load_data()
+structural, rules, labour_sht, comp_costs, cerrejon_impact, component_impact, inventory_total = load_data()
 
 # ─────────────────────────────────────────────────────────────────
 #  CONSTANTS
