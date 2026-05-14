@@ -1318,7 +1318,7 @@ total_comp = pd.to_numeric(
 # ==========================================================
 total_inventory_impact = total_cer + total_comp
 
-    ia, ib = st.columns(2)
+    ia, ib = st.columns(3)
 with ia:
 
     st.markdown(
