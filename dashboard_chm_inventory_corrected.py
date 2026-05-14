@@ -1314,46 +1314,6 @@ total_comp = pd.to_numeric(
 ).fillna(0).sum()
 
 # ==========================================================
-# TOTAL INVENTORY IMPACT
-# ==========================================================
-total_inventory_impact = total_cer + total_comp
-
-ia, ib, ic = st.columns(3)
-
-with ia:
-
-    st.markdown(
-        f'<div class="kpi-card">'
-        f'<div class="kpi-label">Total Inventory Impact</div>'
-        f'<div class="kpi-value">${total_inventory_impact:,.0f}</div>'
-        f'<div class="kpi-sub">combined inventory exposure</div>'
-        f'</div>',
-        unsafe_allow_html=True
-    )
-
-with ib:
-
-    st.markdown(
-        f'<div class="kpi-card">'
-        f'<div class="kpi-label">Cerrejon Inventory Impact</div>'
-        f'<div class="kpi-value">${total_cer:,.0f}</div>'
-        f'<div class="kpi-sub">from Cerrejon inventory impact</div>'
-        f'</div>',
-        unsafe_allow_html=True
-    )
-
-with ic:
-
-    st.markdown(
-        f'<div class="kpi-card">'
-        f'<div class="kpi-label">Component Parts Impact</div>'
-        f'<div class="kpi-value">${total_comp:,.0f}</div>'
-        f'<div class="kpi-sub">from Component parts impact</div>'
-        f'</div>',
-        unsafe_allow_html=True
-    )
-
-# ==========================================================
 # INVENTORY CATEGORY FILTER
 # ==========================================================
 st.markdown(
