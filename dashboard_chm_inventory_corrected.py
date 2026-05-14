@@ -1352,12 +1352,19 @@ with ic:
         f'</div>',
         unsafe_allow_html=True
     )
-    truck_cols = [c for c in cerrejon_impact.columns if isinstance(c, (int, np.integer))]
-    active_truck_cols = [c for c in truck_cols if c in active_dts]
 
-    # ==========================================================
-    # CATEGORY FILTER
-    # ==========================================================
+# ==========================================================
+# FILTER + GRAPH SECTION
+# ==========================================================
+left_col, right_col = st.columns([1, 2])
+
+with left_col:
+
+    st.markdown(
+        '<div class="section-title">Inventory Category Filter</div>',
+        unsafe_allow_html=True
+    )
+
     inventory_categories = [
         "Available  in Cerrejon Stock",
         "Not Catalogued",
@@ -1371,9 +1378,8 @@ with ic:
         key="inventory_category_filter",
     )
 
-    # ==========================================================
-    # FILTER DATAFRAME
-    # ==========================================================
+with right_col:
+
     filtered_inventory_df = cerrejon_impact[
         cerrejon_impact["Category Item"]
         .astype(str)
@@ -1381,9 +1387,16 @@ with ic:
         .isin([x.strip() for x in selected_inventory_categories])
     ].copy()
 
-    # ==========================================================
-    # BUILD TRUCK TOTALS
-    # ==========================================================
+    truck_cols = [
+        c for c in cerrejon_impact.columns
+        if isinstance(c, (int, np.integer))
+    ]
+
+    active_truck_cols = [
+        c for c in truck_cols
+        if c in active_dts
+    ]
+
     truck_part_totals = (
         filtered_inventory_df[active_truck_cols]
         .apply(pd.to_numeric, errors="coerce")
@@ -1399,9 +1412,6 @@ with ic:
         ascending=False
     )
 
-    # ==========================================================
-    # CHART
-    # ==========================================================
     st.markdown(
         '<div class="section-title">Cerrejon Inventory Impact — Required Parts by Truck</div>',
         unsafe_allow_html=True
