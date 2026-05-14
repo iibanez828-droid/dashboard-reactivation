@@ -1303,8 +1303,20 @@ with tab_inventory:
 
     cer_impact_col = "Impact Cerrejon Inventory"
     comp_impact_col = "Impact Cerrejon inventory"
-    total_cer = pd.to_numeric(cerrejon_impact.get(cer_impact_col, 0), errors="coerce").fillna(0).sum()
-    total_comp = pd.to_numeric(component_impact.get(comp_impact_col, 0), errors="coerce").fillna(0).sum()
+    total_cer = pd.to_numeric(
+    cerrejon_impact.get(cer_impact_col, 0),
+    errors="coerce"
+).fillna(0).sum()
+
+total_comp = pd.to_numeric(
+    component_impact.get(comp_impact_col, 0),
+    errors="coerce"
+).fillna(0).sum()
+
+# ==========================================================
+# TOTAL INVENTORY IMPACT
+# ==========================================================
+total_inventory_impact = total_cer + total_comp
 
     ia, ib = st.columns(2)
 with ia:
