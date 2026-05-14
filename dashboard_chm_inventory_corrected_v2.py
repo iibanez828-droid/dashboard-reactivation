@@ -1368,7 +1368,7 @@ inventory_categories = [
     "Cerrejon Stock in Zero",
 ]
 
-    selected_inventory_categories = st.multiselect(
+selected_inventory_categories = st.multiselect(
     "Filter inventory category",
     options=inventory_categories,
     default=inventory_categories,
