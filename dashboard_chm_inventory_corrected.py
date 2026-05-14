@@ -1405,7 +1405,7 @@ truck_tmp = cerrejon_impact.copy()
 truck_tmp["_truck_qty"] = pd.to_numeric(truck_tmp[selected_inv_dt], errors="coerce").fillna(0)
 truck_tmp["_truck_cost"] = truck_tmp["_truck_qty"] * pd.to_numeric(truck_tmp["Price 2026"], errors="coerce").fillna(0)
 truck_cat = _category_summary(truck_tmp, qty_col="_truck_qty", value_col="_truck_cost")
-    _render_category_cards(truck_cat, f"Category Item Mix — DT {selected_inv_dt}")
+_render_category_cards(truck_cat, f"Category Item Mix — DT {selected_inv_dt}")
 
 st.markdown('<div class="section-title">Cerrejon Inventory Impact — Cost by Part Number</div>', unsafe_allow_html=True)
 cer_cost_df = cerrejon_impact[["Row Labels", cer_impact_col]].copy()
