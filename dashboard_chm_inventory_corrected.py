@@ -1307,7 +1307,7 @@ with tab_inventory:
     total_comp = pd.to_numeric(component_impact.get(comp_impact_col, 0), errors="coerce").fillna(0).sum()
 
     ia, ib = st.columns(2)
-    with ia:
+with ia:
 
     st.markdown(
         f'<div class="kpi-card">'
