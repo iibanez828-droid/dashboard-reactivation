@@ -1435,14 +1435,18 @@ truck_cost = float(truck_tmp["_truck_cost"].sum())
 truck_zero = float(truck_tmp.loc[truck_tmp["Category Item"].astype(str).str.contains("Zero", case=False, na=False), "_truck_qty"].sum())
 truck_not_cat = float(truck_tmp.loc[truck_tmp["Category Item"].astype(str).str.contains("Not Catalogued", case=False, na=False), "_truck_qty"].sum())
 ka, kb, kc, kd = st.columns(4)
-    with ka:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-label">Required Parts</div><div class="kpi-value" style="font-size:1.45rem;">{truck_required:,.0f}</div><div class="kpi-sub">DT {selected_inv_dt}</div></div>', unsafe_allow_html=True)
-    with kb:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-label">Estimated Inventory Cost</div><div class="kpi-value" style="font-size:1.45rem;">${truck_cost:,.0f}</div><div class="kpi-sub">qty × Price 2026</div></div>', unsafe_allow_html=True)
-    with kc:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-label">Stock in Zero</div><div class="kpi-value" style="font-size:1.45rem;">{truck_zero:,.0f}</div><div class="kpi-sub">parts</div></div>', unsafe_allow_html=True)
-    with kd:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-label">Not Catalogued</div><div class="kpi-value" style="font-size:1.45rem;">{truck_not_cat:,.0f}</div><div class="kpi-sub">parts</div></div>', unsafe_allow_html=True)
+
+with ka:
+    st.markdown(f'<div class="kpi-card"><div class="kpi-label">Required Parts</div><div class="kpi-value" style="font-size:1.45rem;">{truck_required:,.0f}</div><div class="kpi-sub">DT {selected_inv_dt}</div></div>', unsafe_allow_html=True)
+
+with kb:
+    st.markdown(f'<div class="kpi-card"><div class="kpi-label">Estimated Inventory Cost</div><div class="kpi-value" style="font-size:1.45rem;">${truck_cost:,.0f}</div><div class="kpi-sub">qty × Price 2026</div></div>', unsafe_allow_html=True)
+
+with kc:
+    st.markdown(f'<div class="kpi-card"><div class="kpi-label">Stock in Zero</div><div class="kpi-value" style="font-size:1.45rem;">{truck_zero:,.0f}</div><div class="kpi-sub">parts</div></div>', unsafe_allow_html=True)
+
+with kd:
+    st.markdown(f'<div class="kpi-card"><div class="kpi-label">Not Catalogued</div><div class="kpi-value" style="font-size:1.45rem;">{truck_not_cat:,.0f}</div><div class="kpi-sub">parts</div></div>', unsafe_allow_html=True)
 
 # ═══════════════════════════════════════════════════════════════
 #  TAB 6 — KITS TABLE
