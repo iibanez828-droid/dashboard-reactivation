@@ -1393,7 +1393,7 @@ total_cat_cer = _category_summary(
     qty_col="Grand Total",
     value_col=cer_impact_col
 )
-    _render_category_cards(total_cat_cer, "Category Item Mix — Total Fleet")
+_render_category_cards(total_cat_cer, "Category Item Mix — Total Fleet")
 
     selected_inv_dt = st.selectbox(
         "Select Truck for inventory KPIs",
