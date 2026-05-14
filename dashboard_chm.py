@@ -66,6 +66,7 @@ CHM_RATE = 40.86   # USD/hr — from Rules & Rate column D
 # Row 3: Engine 0.70   | Row 4: Body 0.70
 CATEGORY_DEFAULTS = {
     "Hydraulic":    float(rules.loc[0, "Percentages"]),  # 0.65
+    "Strut":        float(rules.loc[4, "Percentages"]),  # 0.70
     "Electrical":   float(rules.loc[1, "Percentages"]),  # 0.50
     "Final Drives": float(rules.loc[2, "Percentages"]),  # 0.70
     "Engine":       float(rules.loc[3, "Percentages"]),  # 0.70
@@ -82,11 +83,11 @@ COMP_CATEGORY = {
     "Hoist cylinder left":   "Hydraulic",
     "Steer cylinder right":  "Hydraulic",
     "Steer cylinder left":   "Hydraulic",
-    "Front strut right":     "Hydraulic",
-    "Rear strtus right":     "Hydraulic",
-    "Front strut left":      "Hydraulic",
-    "Rear strut right":      "Hydraulic",
-    "Rear strut left":       "Hydraulic",
+    "Front strut right":     "Strut",
+    "Rear strtus right":     "Strut",
+    "Front strut left":      "Strut",
+    "Rear strut right":      "Strut",
+    "Rear strut left":       "Strut",
     "Alternator":            "Electrical",
     "Eletrical motor right": "Electrical",
     "Eletrical motor left":  "Electrical",
@@ -107,6 +108,7 @@ CATEGORY_COLORS = {
     "Final Drives": "#FF9340",
     "Engine":       "#FF4500",
     "Body":         "#888888",
+    "Strut":        "#FFFF00",
 }
 
 # Flag column in Structural (.1 suffix) → component name in Component $
@@ -292,6 +294,7 @@ with st.sidebar:
     st.markdown("### Component Thresholds")
 
     t_hyd = st.slider("Hydraulic",    0.0, 1.0, CATEGORY_DEFAULTS["Hydraulic"],    0.01, format="%.2f")
+    t_strut = st.slider("Strut",      0.0, 1.0, CATEGORY_DEFAULTS["Strut"],        0.01, format="%.2f")
     t_ele = st.slider("Electrical",   0.0, 1.0, CATEGORY_DEFAULTS["Electrical"],   0.01, format="%.2f")
     t_fd  = st.slider("Final Drives", 0.0, 1.0, CATEGORY_DEFAULTS["Final Drives"], 0.01, format="%.2f")
     t_eng = st.slider("Engine",       0.0, 1.0, CATEGORY_DEFAULTS["Engine"],       0.01, format="%.2f")
@@ -299,6 +302,7 @@ with st.sidebar:
 
     thresholds = {
         "Hydraulic":    t_hyd,
+        "Strut":        t_strut,
         "Electrical":   t_ele,
         "Final Drives": t_fd,
         "Engine":       t_eng,
