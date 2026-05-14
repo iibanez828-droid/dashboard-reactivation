@@ -1395,7 +1395,7 @@ total_cat_cer = _category_summary(
 )
 _render_category_cards(total_cat_cer, "Category Item Mix — Total Fleet")
 
-    selected_inv_dt = st.selectbox(
+selected_inv_dt = st.selectbox(
         "Select Truck for inventory KPIs",
         options=sorted([int(x) for x in active_truck_cols]),
         format_func=lambda x: f"DT {x}",
