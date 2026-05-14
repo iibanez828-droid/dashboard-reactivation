@@ -1428,7 +1428,11 @@ st.plotly_chart(
     use_container_width=True,
     config={"displayModeBar": False}
 )
-    total_cat_cer = _category_summary(cerrejon_impact, qty_col="Grand Total", value_col=cer_impact_col)
+    total_cat_cer = _category_summary(
+    cerrejon_impact,
+    qty_col="Grand Total",
+    value_col=cer_impact_col
+)
     _render_category_cards(total_cat_cer, "Category Item Mix — Total Fleet")
 
     selected_inv_dt = st.selectbox(
