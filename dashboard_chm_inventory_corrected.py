@@ -1460,14 +1460,32 @@ with tab_inventory_total:
     # ==========================================================
     # FILTER BY KIT NAME
     # ==========================================================
-    kit_column = "Kits Name"
+    # ==========================================================
+# FILTER BY KIT NAME
+# ==========================================================
 
-    # Clean kit names
-    inv_tbl[kit_column] = (
-        inv_tbl[kit_column]
-        .astype(str)
-        .str.strip()
-    )
+# Detect kit-name column automatically
+possible_kit_cols = [
+    c for c in inv_tbl.columns
+    if "kit" in str(c).lower()
+    and "name" in str(c).lower()
+]
+
+if len(possible_kit_cols) > 0:
+
+    kit_column = possible_kit_cols[0]
+
+else:
+
+    st.error("Kit name column not found in Kits sheet.")
+    st.stop()
+
+# Clean kit names
+inv_tbl[kit_column] = (
+    inv_tbl[kit_column]
+    .astype(str)
+    .str.strip()
+)
 
     # Available kits
     available_kits = sorted(
