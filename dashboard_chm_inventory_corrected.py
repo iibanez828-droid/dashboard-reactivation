@@ -1387,7 +1387,7 @@ with tab_inventory_total:
     # ==========================================================
     # LOAD KITS TABLE
     # ==========================================================
-    inv_tbl = kits.copy()
+inv_tbl = kits_sht.copy()
 
     # Clean columns
     inv_tbl.columns = (
