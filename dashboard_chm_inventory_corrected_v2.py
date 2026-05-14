@@ -1235,89 +1235,42 @@ with tab_gantt:
 
 
 
+Rewritten INVENTORY ANALYSIS Tab
+
+Reemplaza COMPLETAMENTE el contenido actual de tu tab with tab_inventory: por este bloque limpio y correctamente indentado.
+
 # ═══════════════════════════════════════════════════════════════
-#  TAB 5 — INVENTORY ANALYSIS
+# INVENTORY ANALYSIS TAB
 # ═══════════════════════════════════════════════════════════════
-def _money(v):
-    try:
-        return f"${float(v):,.0f}"
-    except Exception:
-        return "$0"
-
-def _category_summary(df_src, qty_col=None, value_col=None):
-    tmp = df_src.copy()
-    if qty_col is None:
-        tmp["_qty"] = 1
-    else:
-        tmp["_qty"] = pd.to_numeric(tmp[qty_col], errors="coerce").fillna(0)
-    if value_col and value_col in tmp.columns:
-        tmp["_value"] = pd.to_numeric(tmp[value_col], errors="coerce").fillna(0)
-    else:
-        tmp["_value"] = 0
-    cat = tmp.groupby("Category Item", dropna=False).agg(Parts=("_qty", "sum"), Cost=("_value", "sum")).reset_index()
-    total_parts = cat["Parts"].sum()
-    total_cost = cat["Cost"].sum()
-    cat["Parts %"] = np.where(total_parts > 0, cat["Parts"] / total_parts * 100, 0)
-    cat["Cost %"] = np.where(total_cost > 0, cat["Cost"] / total_cost * 100, 0)
-    return cat.sort_values("Parts", ascending=False)
-
-def _render_category_cards(cat_df, title):
-    st.markdown(f'<div class="section-title">{title}</div>', unsafe_allow_html=True)
-    cats = ["Available  in Cerrejon Stock", "Not Catalogued", "Cerrejon Stock in Zero"]
-    cols = st.columns(3)
-    for col, cat in zip(cols, cats):
-        row = cat_df[cat_df["Category Item"].astype(str).str.strip().eq(cat.strip())]
-        parts_pct = float(row["Parts %"].iloc[0]) if not row.empty else 0.0
-        parts = float(row["Parts"].iloc[0]) if not row.empty else 0.0
-        with col:
-            st.markdown(
-                f'<div class="kpi-card"><div class="kpi-label">{cat.strip()}</div>'
-                f'<div class="kpi-value" style="font-size:1.45rem;">{parts_pct:.1f}%</div>'
-                f'<div class="kpi-sub">{parts:,.0f} required parts</div></div>',
-                unsafe_allow_html=True,
-            )
-
-def _bar_chart(df_plot, x_col, y_col, title, y_title, text_prefix=""):
-    fig = go.Figure(go.Bar(
-        x=df_plot[x_col].astype(str),
-        y=df_plot[y_col],
-        marker_color="#FF6B00",
-        text=[f"{text_prefix}{v:,.0f}" for v in df_plot[y_col]],
-        textposition="outside",
-        textfont=dict(size=9, family="Barlow Condensed"),
-        hovertemplate="%{x}<br>%{y:,.0f}<extra></extra>",
-    ))
-    fig.update_layout(
-        title=dict(text=title, font=dict(size=16, family="Barlow Condensed")),
-        margin=dict(l=10, r=10, t=50, b=110), height=430,
-        paper_bgcolor="#FFFFFF", plot_bgcolor="#FFFFFF",
-        font=dict(family="Barlow", color="#1A1A1A"),
-        xaxis=dict(tickangle=-35, showgrid=False),
-        yaxis=dict(title=y_title, showgrid=True, gridcolor="#F0F0F0"),
-        bargap=0.25,
-    )
-    return fig
-
 with tab_inventory:
-    st.markdown('<div class="section-title">Inventory Impact Overview</div>', unsafe_allow_html=True)
-
+    # ==========================================================
+    # SECTION TITLE
+    # ==========================================================
+    st.markdown(
+        '<div class="section-title">Inventory Impact Overview</div>',
+        unsafe_allow_html=True
+    )
+    # ==========================================================
+    # MAIN COLUMNS
+    # ==========================================================
     cer_impact_col = "Impact Cerrejon Inventory"
     comp_impact_col = "Impact Cerrejon inventory"
-
+    # ==========================================================
+    # TOTALS
+    # ==========================================================
     total_cer = pd.to_numeric(
         cerrejon_impact.get(cer_impact_col, 0),
         errors="coerce"
     ).fillna(0).sum()
-
     total_comp = pd.to_numeric(
         component_impact.get(comp_impact_col, 0),
         errors="coerce"
     ).fillna(0).sum()
-
     total_inventory_impact = total_cer + total_comp
-
+    # ==========================================================
+    # KPI CARDS
+    # ==========================================================
     k1, k2, k3 = st.columns(3)
-
     with k1:
         st.markdown(
             f'''
@@ -1329,7 +1282,6 @@ with tab_inventory:
             ''',
             unsafe_allow_html=True
         )
-
     with k2:
         st.markdown(
             f'''
@@ -1341,7 +1293,6 @@ with tab_inventory:
             ''',
             unsafe_allow_html=True
         )
-
     with k3:
         st.markdown(
             f'''
@@ -1353,142 +1304,336 @@ with tab_inventory:
             ''',
             unsafe_allow_html=True
         )
-
     # ==========================================================
-    # INVENTORY CATEGORY FILTER
+    # FILTER TITLE
     # ==========================================================
     st.markdown(
         '<div class="section-title">Inventory Category Filter</div>',
         unsafe_allow_html=True
     )
-
-inventory_categories = [
-    "Available  in Cerrejon Stock",
-    "Not Catalogued",
-    "Cerrejon Stock in Zero",
-]
-
-selected_inventory_categories = st.multiselect(
-    "Filter inventory category",
-    options=inventory_categories,
-    default=inventory_categories,
-    key="inventory_category_filter",
-)
-
-# ==========================================================
-# FILTER DATAFRAME
-# ==========================================================
+    # ==========================================================
+    # FILTER OPTIONS
+    # ==========================================================
+    inventory_categories = sorted(
+        cerrejon_impact[
+            "Category Item"
+        ].dropna().astype(str).unique()
+    )
+    selected_inventory_categories = st.multiselect(
+        "Filter inventory category",
+        options=inventory_categories,
+        default=inventory_categories,
+        key="inventory_category_filter"
+    )
+    # ==========================================================
+    # FILTERED DATAFRAME
+    # ==========================================================
     filtered_inventory_df = cerrejon_impact[
-    cerrejon_impact["Category Item"]
-    .astype(str)
-    .str.strip()
-    .isin([x.strip() for x in selected_inventory_categories])
-].copy()
-
+        cerrejon_impact[
+            "Category Item"
+        ].astype(str).isin(selected_inventory_categories)
+    ].copy()
+    # ==========================================================
+    # TRUCK COLUMNS
+    # ==========================================================
     truck_cols = [
-    c for c in cerrejon_impact.columns
-    if isinstance(c, (int, np.integer))
-]
-
+        c for c in filtered_inventory_df.columns
+        if str(c).isdigit()
+    ]
     active_truck_cols = [
-    c for c in truck_cols
-    if c in active_dts
-]
-
+        c for c in truck_cols
+        if pd.to_numeric(
+            filtered_inventory_df[c],
+            errors="coerce"
+        ).fillna(0).sum() > 0
+    ]
+    # ==========================================================
+    # REQUIRED PARTS BY TRUCK
+    # ==========================================================
     truck_part_totals = (
-    filtered_inventory_df[active_truck_cols]
-    .apply(pd.to_numeric, errors="coerce")
-    .fillna(0)
-    .sum()
-    .reset_index()
-)
-
-    truck_part_totals.columns = ["Truck", "Required Parts"]
-
+        filtered_inventory_df[active_truck_cols]
+        .apply(pd.to_numeric, errors="coerce")
+        .fillna(0)
+        .sum()
+        .reset_index()
+    )
+    truck_part_totals.columns = [
+        "Truck",
+        "Required Parts"
+    ]
     truck_part_totals = truck_part_totals.sort_values(
-    "Required Parts",
-    ascending=False
-)
-
-# ==========================================================
-# GRAPH
-# ==========================================================
+        "Required Parts",
+        ascending=False
+    )
+    # ==========================================================
+    # SECTION TITLE
+    # ==========================================================
     st.markdown(
         '<div class="section-title">Cerrejon Inventory Impact — Required Parts by Truck</div>',
-    unsafe_allow_html=True
-)
-
+        unsafe_allow_html=True
+    )
+    # ==========================================================
+    # MAIN CHART
+    # ==========================================================
     st.plotly_chart(
-    _bar_chart(
-        truck_part_totals,
-        "Truck",
-        "Required Parts",
-        "Total required parts by truck",
-        "Required parts"
-    ),
-    use_container_width=True,
-    config={"displayModeBar": False}
-)
+        _bar_chart(
+            truck_part_totals,
+            "Truck",
+            "Required Parts",
+            "Total required parts by truck",
+            "Required parts"
+        ),
+        use_container_width=True,
+        config={"displayModeBar": False}
+    )
+    # ==========================================================
+    # CATEGORY MIX TOTAL FLEET
+    # ==========================================================
     total_cat_cer = _category_summary(
-    cerrejon_impact,
-    qty_col="Grand Total",
-    value_col=cer_impact_col
-)
-    _render_category_cards(total_cat_cer, "Category Item Mix — Total Fleet")
-
+        filtered_inventory_df,
+        qty_col="Grand Total",
+        value_col=cer_impact_col
+    )
+    _render_category_cards(
+        total_cat_cer,
+        "Category Item Mix — Total Fleet"
+    )
+    # ==========================================================
+    # SELECT TRUCK
+    # ==========================================================
     selected_inv_dt = st.selectbox(
         "Select Truck for inventory KPIs",
         options=sorted([int(x) for x in active_truck_cols]),
         format_func=lambda x: f"DT {x}",
-        key="inventory_dt_sel",
+        key="inventory_dt_sel"
     )
-    truck_tmp = cerrejon_impact.copy()
-    truck_tmp["_truck_qty"] = pd.to_numeric(truck_tmp[selected_inv_dt], errors="coerce").fillna(0)
-    truck_tmp["_truck_cost"] = truck_tmp["_truck_qty"] * pd.to_numeric(truck_tmp["Price 2026"], errors="coerce").fillna(0)
-    truck_cat = _category_summary(truck_tmp, qty_col="_truck_qty", value_col="_truck_cost")
-    _render_category_cards(truck_cat, f"Category Item Mix — DT {selected_inv_dt}")
-
-st.markdown('<div class="section-title">Cerrejon Inventory Impact — Cost by Part Number</div>', unsafe_allow_html=True)
-cer_cost_df = cerrejon_impact[["Row Labels", cer_impact_col]].copy()
-cer_cost_df[cer_impact_col] = pd.to_numeric(cer_cost_df[cer_impact_col], errors="coerce").fillna(0)
-cer_cost_df = cer_cost_df.sort_values(cer_impact_col, ascending=False).head(25)
-    st.plotly_chart(_bar_chart(cer_cost_df, "Row Labels", cer_impact_col, "Top 25 part numbers by inventory impact cost", "Cost (USD)", "$"), use_container_width=True, config={"displayModeBar": False})
-
-st.markdown('<hr>', unsafe_allow_html=True)
-st.markdown('<div class="section-title">Component Parts Impact</div>', unsafe_allow_html=True)
-comp_parts_df = component_impact[["Component", "Total components required"]].copy()
-comp_parts_df["Total components required"] = pd.to_numeric(comp_parts_df["Total components required"], errors="coerce").fillna(0)
-comp_parts_df = comp_parts_df.groupby("Component", as_index=False)["Total components required"].sum().sort_values("Total components required", ascending=False)
-    st.plotly_chart(_bar_chart(comp_parts_df, "Component", "Total components required", "Total required parts by component", "Required parts"), use_container_width=True, config={"displayModeBar": False})
-
-total_cat_comp = _category_summary(component_impact, qty_col="Total components required", value_col=comp_impact_col)
-_render_category_cards(total_cat_comp, "Category Item Mix — Component Parts")
-
-st.markdown('<div class="section-title">Component Parts Impact — Cost by Component</div>', unsafe_allow_html=True)
-comp_cost_df = component_impact[["Component", comp_impact_col]].copy()
-comp_cost_df[comp_impact_col] = pd.to_numeric(comp_cost_df[comp_impact_col], errors="coerce").fillna(0)
-comp_cost_df = comp_cost_df.groupby("Component", as_index=False)[comp_impact_col].sum().sort_values(comp_impact_col, ascending=False)
-    st.plotly_chart(_bar_chart(comp_cost_df, "Component", comp_impact_col, "Inventory impact cost by component", "Cost (USD)", "$"), use_container_width=True, config={"displayModeBar": False})
-
-st.markdown('<div class="section-title">Selected Truck Inventory KPIs</div>', unsafe_allow_html=True)
-truck_required = float(truck_tmp["_truck_qty"].sum())
-truck_cost = float(truck_tmp["_truck_cost"].sum())
-truck_zero = float(truck_tmp.loc[truck_tmp["Category Item"].astype(str).str.contains("Zero", case=False, na=False), "_truck_qty"].sum())
-truck_not_cat = float(truck_tmp.loc[truck_tmp["Category Item"].astype(str).str.contains("Not Catalogued", case=False, na=False), "_truck_qty"].sum())
-ka, kb, kc, kd = st.columns(4)
-
-with ka:
-    st.markdown(f'<div class="kpi-card"><div class="kpi-label">Required Parts</div><div class="kpi-value" style="font-size:1.45rem;">{truck_required:,.0f}</div><div class="kpi-sub">DT {selected_inv_dt}</div></div>', unsafe_allow_html=True)
-
-with kb:
-    st.markdown(f'<div class="kpi-card"><div class="kpi-label">Estimated Inventory Cost</div><div class="kpi-value" style="font-size:1.45rem;">${truck_cost:,.0f}</div><div class="kpi-sub">qty × Price 2026</div></div>', unsafe_allow_html=True)
-
-with kc:
-    st.markdown(f'<div class="kpi-card"><div class="kpi-label">Stock in Zero</div><div class="kpi-value" style="font-size:1.45rem;">{truck_zero:,.0f}</div><div class="kpi-sub">parts</div></div>', unsafe_allow_html=True)
-
-with kd:
-    st.markdown(f'<div class="kpi-card"><div class="kpi-label">Not Catalogued</div><div class="kpi-value" style="font-size:1.45rem;">{truck_not_cat:,.0f}</div><div class="kpi-sub">parts</div></div>', unsafe_allow_html=True)
-
+    # ==========================================================
+    # TRUCK DATAFRAME
+    # ==========================================================
+    truck_tmp = filtered_inventory_df.copy()
+    truck_tmp["_truck_qty"] = pd.to_numeric(
+        truck_tmp[str(selected_inv_dt)],
+        errors="coerce"
+    ).fillna(0)
+    truck_tmp["_truck_cost"] = (
+        truck_tmp["_truck_qty"]
+        * pd.to_numeric(
+            truck_tmp["Price 2026"],
+            errors="coerce"
+        ).fillna(0)
+    )
+    # ==========================================================
+    # CATEGORY MIX DT
+    # ==========================================================
+    truck_cat = _category_summary(
+        truck_tmp,
+        qty_col="_truck_qty",
+        value_col="_truck_cost"
+    )
+    _render_category_cards(
+        truck_cat,
+        f"Category Item Mix — DT {selected_inv_dt}"
+    )
+    # ==========================================================
+    # COST BY PART NUMBER
+    # ==========================================================
+    st.markdown(
+        '<div class="section-title">Cerrejon Inventory Impact — Cost by Part Number</div>',
+        unsafe_allow_html=True
+    )
+    cer_cost_df = truck_tmp[[
+        "Row Labels",
+        "_truck_cost"
+    ]].copy()
+    cer_cost_df = cer_cost_df.sort_values(
+        "_truck_cost",
+        ascending=False
+    ).head(25)
+    st.plotly_chart(
+        _bar_chart(
+            cer_cost_df,
+            "Row Labels",
+            "_truck_cost",
+            "Top 25 part numbers by inventory impact cost",
+            "Cost (USD)",
+            "$"
+        ),
+        use_container_width=True,
+        config={"displayModeBar": False}
+    )
+    # ==========================================================
+    # COMPONENT PARTS IMPACT
+    # ==========================================================
+    st.markdown(
+        '<hr>',
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        '<div class="section-title">Component Parts Impact</div>',
+        unsafe_allow_html=True
+    )
+    comp_parts_df = component_impact[[
+        "Component",
+        "Total components required"
+    ]].copy()
+    comp_parts_df[
+        "Total components required"
+    ] = pd.to_numeric(
+        comp_parts_df[
+            "Total components required"
+        ],
+        errors="coerce"
+    ).fillna(0)
+    comp_parts_df = (
+        comp_parts_df
+        .groupby("Component", as_index=False)["Total components required"]
+        .sum()
+        .sort_values(
+            "Total components required",
+            ascending=False
+        )
+    )
+    st.plotly_chart(
+        _bar_chart(
+            comp_parts_df,
+            "Component",
+            "Total components required",
+            "Total required parts by component",
+            "Required parts"
+        ),
+        use_container_width=True,
+        config={"displayModeBar": False}
+    )
+    # ==========================================================
+    # CATEGORY MIX COMPONENTS
+    # ==========================================================
+    total_cat_comp = _category_summary(
+        component_impact,
+        qty_col="Total components required",
+        value_col=comp_impact_col
+    )
+    _render_category_cards(
+        total_cat_comp,
+        "Category Item Mix — Component Parts"
+    )
+    # ==========================================================
+    # COMPONENT COST
+    # ==========================================================
+    st.markdown(
+        '<div class="section-title">Component Parts Impact — Cost by Component</div>',
+        unsafe_allow_html=True
+    )
+    comp_cost_df = component_impact[[
+        "Component",
+        comp_impact_col
+    ]].copy()
+    comp_cost_df[comp_impact_col] = pd.to_numeric(
+        comp_cost_df[comp_impact_col],
+        errors="coerce"
+    ).fillna(0)
+    comp_cost_df = (
+        comp_cost_df
+        .groupby("Component", as_index=False)[comp_impact_col]
+        .sum()
+        .sort_values(
+            comp_impact_col,
+            ascending=False
+        )
+    )
+    st.plotly_chart(
+        _bar_chart(
+            comp_cost_df,
+            "Component",
+            comp_impact_col,
+            "Inventory impact cost by component",
+            "Cost (USD)",
+            "$"
+        ),
+        use_container_width=True,
+        config={"displayModeBar": False}
+    )
+    # ==========================================================
+    # SELECTED TRUCK KPIs
+    # ==========================================================
+    st.markdown(
+        '<div class="section-title">Selected Truck Inventory KPIs</div>',
+        unsafe_allow_html=True
+    )
+    truck_required = float(
+        truck_tmp["_truck_qty"].sum()
+    )
+    truck_cost = float(
+        truck_tmp["_truck_cost"].sum()
+    )
+    truck_zero = float(
+        truck_tmp.loc[
+            truck_tmp[
+                "Category Item"
+            ].astype(str).str.contains(
+                "Zero",
+                case=False,
+                na=False
+            ),
+            "_truck_qty"
+        ].sum()
+    )
+    truck_not_cat = float(
+        truck_tmp.loc[
+            truck_tmp[
+                "Category Item"
+            ].astype(str).str.contains(
+                "Not Catalogued",
+                case=False,
+                na=False
+            ),
+            "_truck_qty"
+        ].sum()
+    )
+    ka, kb, kc, kd = st.columns(4)
+    with ka:
+        st.markdown(
+            f'''
+            <div class="kpi-card">
+                <div class="kpi-label">Required Parts</div>
+                <div class="kpi-value" style="font-size:1.45rem;">{truck_required:,.0f}</div>
+                <div class="kpi-sub">DT {selected_inv_dt}</div>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
+    with kb:
+        st.markdown(
+            f'''
+            <div class="kpi-card">
+                <div class="kpi-label">Estimated Inventory Cost</div>
+                <div class="kpi-value" style="font-size:1.45rem;">${truck_cost:,.0f}</div>
+                <div class="kpi-sub">qty × Price 2026</div>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
+    with kc:
+        st.markdown(
+            f'''
+            <div class="kpi-card">
+                <div class="kpi-label">Stock in Zero</div>
+                <div class="kpi-value" style="font-size:1.45rem;">{truck_zero:,.0f}</div>
+                <div class="kpi-sub">parts</div>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
+    with kd:
+        st.markdown(
+            f'''
+            <div class="kpi-card">
+                <div class="kpi-label">Not Catalogued</div>
+                <div class="kpi-value" style="font-size:1.45rem;">{truck_not_cat:,.0f}</div>
+                <div class="kpi-sub">parts</div>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
 # ═══════════════════════════════════════════════════════════════
 #  TAB 6 — KITS TABLE
 # ═══════════════════════════════════════════════════════════════
