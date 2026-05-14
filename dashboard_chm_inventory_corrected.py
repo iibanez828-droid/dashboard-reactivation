@@ -1311,72 +1311,72 @@ with tab_inventory:
         st.markdown(f'<div class="kpi-card"><div class="kpi-label">Cerrejon Inventory Impact</div><div class="kpi-value">${total_cer:,.0f}</div><div class="kpi-sub">from Cerrejon inventory impact</div></div>', unsafe_allow_html=True)
     with ib:
         st.markdown(f'<div class="kpi-card"><div class="kpi-label">Component Parts Impact</div><div class="kpi-value">${total_comp:,.0f}</div><div class="kpi-sub">from Component parts impact</div></div>', unsafe_allow_html=True)
-truck_cols = [c for c in cerrejon_impact.columns if isinstance(c, (int, np.integer))]
-active_truck_cols = [c for c in truck_cols if c in active_dts]
+    truck_cols = [c for c in cerrejon_impact.columns if isinstance(c, (int, np.integer))]
+    active_truck_cols = [c for c in truck_cols if c in active_dts]
 
-# ==========================================================
-# CATEGORY FILTER
-# ==========================================================
-inventory_categories = [
-    "Available  in Cerrejon Stock",
-    "Not Catalogued",
-    "Cerrejon Stock in Zero",
-]
+    # ==========================================================
+    # CATEGORY FILTER
+    # ==========================================================
+    inventory_categories = [
+        "Available  in Cerrejon Stock",
+        "Not Catalogued",
+        "Cerrejon Stock in Zero",
+    ]
 
-selected_inventory_categories = st.multiselect(
-    "Filter inventory category",
-    options=inventory_categories,
-    default=inventory_categories,
-    key="inventory_category_filter",
-)
+    selected_inventory_categories = st.multiselect(
+        "Filter inventory category",
+        options=inventory_categories,
+        default=inventory_categories,
+        key="inventory_category_filter",
+    )
 
-# ==========================================================
-# FILTER DATAFRAME
-# ==========================================================
-filtered_inventory_df = cerrejon_impact[
-    cerrejon_impact["Category Item"]
-    .astype(str)
-    .str.strip()
-    .isin([x.strip() for x in selected_inventory_categories])
-].copy()
+    # ==========================================================
+    # FILTER DATAFRAME
+    # ==========================================================
+    filtered_inventory_df = cerrejon_impact[
+        cerrejon_impact["Category Item"]
+        .astype(str)
+        .str.strip()
+        .isin([x.strip() for x in selected_inventory_categories])
+    ].copy()
 
-# ==========================================================
-# BUILD TRUCK TOTALS
-# ==========================================================
-truck_part_totals = (
-    filtered_inventory_df[active_truck_cols]
-    .apply(pd.to_numeric, errors="coerce")
-    .fillna(0)
-    .sum()
-    .reset_index()
-)
+    # ==========================================================
+    # BUILD TRUCK TOTALS
+    # ==========================================================
+    truck_part_totals = (
+        filtered_inventory_df[active_truck_cols]
+        .apply(pd.to_numeric, errors="coerce")
+        .fillna(0)
+        .sum()
+        .reset_index()
+    )
 
-truck_part_totals.columns = ["Truck", "Required Parts"]
+    truck_part_totals.columns = ["Truck", "Required Parts"]
 
-truck_part_totals = truck_part_totals.sort_values(
-    "Required Parts",
-    ascending=False
-)
-
-# ==========================================================
-# CHART
-# ==========================================================
-st.markdown(
-    '<div class="section-title">Cerrejon Inventory Impact — Required Parts by Truck</div>',
-    unsafe_allow_html=True
-)
-
-st.plotly_chart(
-    _bar_chart(
-        truck_part_totals,
-        "Truck",
+    truck_part_totals = truck_part_totals.sort_values(
         "Required Parts",
-        "Total required parts by truck",
-        "Required parts"
-    ),
-    use_container_width=True,
-    config={"displayModeBar": False}
-)
+        ascending=False
+    )
+
+    # ==========================================================
+    # CHART
+    # ==========================================================
+    st.markdown(
+        '<div class="section-title">Cerrejon Inventory Impact — Required Parts by Truck</div>',
+        unsafe_allow_html=True
+    )
+
+    st.plotly_chart(
+        _bar_chart(
+            truck_part_totals,
+            "Truck",
+            "Required Parts",
+            "Total required parts by truck",
+            "Required parts"
+        ),
+        use_container_width=True,
+        config={"displayModeBar": False}
+    )
     total_cat_cer = _category_summary(cerrejon_impact, qty_col="Grand Total", value_col=cer_impact_col)
     _render_category_cards(total_cat_cer, "Category Item Mix — Total Fleet")
 
