@@ -1388,7 +1388,7 @@ st.plotly_chart(
     use_container_width=True,
     config={"displayModeBar": False}
 )
-    total_cat_cer = _category_summary(
+total_cat_cer = _category_summary(
     cerrejon_impact,
     qty_col="Grand Total",
     value_col=cer_impact_col
