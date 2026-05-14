@@ -1373,7 +1373,6 @@ with tab_inventory:
     with kd:
         st.markdown(f'<div class="kpi-card"><div class="kpi-label">Not Catalogued</div><div class="kpi-value" style="font-size:1.45rem;">{truck_not_cat:,.0f}</div><div class="kpi-sub">parts</div></div>', unsafe_allow_html=True)
 
-
 # ═══════════════════════════════════════════════════════════════
 #  TAB 6 — KITS TABLE
 # ═══════════════════════════════════════════════════════════════
@@ -1387,7 +1386,7 @@ with tab_inventory_total:
     # ==========================================================
     # LOAD KITS TABLE
     # ==========================================================
-inv_tbl = kits_sht.copy()
+    inv_tbl = kits_sht.copy()
 
     # Clean columns
     inv_tbl.columns = (
@@ -1403,7 +1402,9 @@ inv_tbl = kits_sht.copy()
     # NUMERIC CONVERSION
     # ==========================================================
     for col in ["QTY", "CHM Dealer price", "Total price"]:
+
         if col in inv_tbl.columns:
+
             inv_tbl[col] = (
                 pd.to_numeric(inv_tbl[col], errors="coerce")
                 .fillna(0)
@@ -1415,6 +1416,7 @@ inv_tbl = kits_sht.copy()
     t1, t2, t3 = st.columns(3)
 
     with t1:
+
         st.markdown(
             f'''
             <div class="kpi-card">
@@ -1428,6 +1430,7 @@ inv_tbl = kits_sht.copy()
         )
 
     with t2:
+
         st.markdown(
             f'''
             <div class="kpi-card">
@@ -1441,6 +1444,7 @@ inv_tbl = kits_sht.copy()
         )
 
     with t3:
+
         st.markdown(
             f'''
             <div class="kpi-card">
@@ -1525,7 +1529,6 @@ inv_tbl = kits_sht.copy()
         mime="text/csv",
         use_container_width=True,
     )
-
 
 # ─────────────────────────────────────────────────────────────────
 #  FOOTER
