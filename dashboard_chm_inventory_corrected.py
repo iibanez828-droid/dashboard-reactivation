@@ -484,7 +484,7 @@ st.markdown(
 
 tab_fleet, tab_truck, tab_kits, tab_gantt, tab_inventory, tab_inventory_total = st.tabs([
     "Fleet Overview", "Cost Analysis per Truck", "Kit Analysis", "Reactivation Gantt",
-    "Inventory Analysis", "Inventory Total",
+    "Inventory Analysis", "Part List",
 ])
 
 # ═══════════════════════════════════════════════════════════════
