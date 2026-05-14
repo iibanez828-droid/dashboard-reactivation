@@ -1307,10 +1307,38 @@ with tab_inventory:
     total_comp = pd.to_numeric(component_impact.get(comp_impact_col, 0), errors="coerce").fillna(0).sum()
 
     ia, ib = st.columns(2)
-    with ia:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-label">Cerrejon Inventory Impact</div><div class="kpi-value">${total_cer:,.0f}</div><div class="kpi-sub">from Cerrejon inventory impact</div></div>', unsafe_allow_html=True)
+        with ia:
+
+        st.markdown(
+            f'<div class="kpi-card">'
+            f'<div class="kpi-label">Total Inventory Impact</div>'
+            f'<div class="kpi-value">${total_inventory_impact:,.0f}</div>'
+            f'<div class="kpi-sub">combined inventory exposure</div>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
+
     with ib:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-label">Component Parts Impact</div><div class="kpi-value">${total_comp:,.0f}</div><div class="kpi-sub">from Component parts impact</div></div>', unsafe_allow_html=True)
+
+        st.markdown(
+            f'<div class="kpi-card">'
+            f'<div class="kpi-label">Cerrejon Inventory Impact</div>'
+            f'<div class="kpi-value">${total_cer:,.0f}</div>'
+            f'<div class="kpi-sub">from Cerrejon inventory impact</div>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
+
+    with ic:
+
+        st.markdown(
+            f'<div class="kpi-card">'
+            f'<div class="kpi-label">Component Parts Impact</div>'
+            f'<div class="kpi-value">${total_comp:,.0f}</div>'
+            f'<div class="kpi-sub">from Component parts impact</div>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
     truck_cols = [c for c in cerrejon_impact.columns if isinstance(c, (int, np.integer))]
     active_truck_cols = [c for c in truck_cols if c in active_dts]
 
