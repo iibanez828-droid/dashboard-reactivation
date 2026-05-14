@@ -1354,80 +1354,80 @@ with ic:
     )
 
 # ==========================================================
-# FILTER + GRAPH SECTION
+# INVENTORY CATEGORY FILTER
 # ==========================================================
-left_col, right_col = st.columns([1, 2])
+st.markdown(
+    '<div class="section-title">Inventory Category Filter</div>',
+    unsafe_allow_html=True
+)
 
-with left_col:
+inventory_categories = [
+    "Available  in Cerrejon Stock",
+    "Not Catalogued",
+    "Cerrejon Stock in Zero",
+]
 
-    st.markdown(
-        '<div class="section-title">Inventory Category Filter</div>',
-        unsafe_allow_html=True
-    )
+selected_inventory_categories = st.multiselect(
+    "Filter inventory category",
+    options=inventory_categories,
+    default=inventory_categories,
+    key="inventory_category_filter",
+)
 
-    inventory_categories = [
-        "Available  in Cerrejon Stock",
-        "Not Catalogued",
-        "Cerrejon Stock in Zero",
-    ]
+# ==========================================================
+# FILTER DATAFRAME
+# ==========================================================
+filtered_inventory_df = cerrejon_impact[
+    cerrejon_impact["Category Item"]
+    .astype(str)
+    .str.strip()
+    .isin([x.strip() for x in selected_inventory_categories])
+].copy()
 
-    selected_inventory_categories = st.multiselect(
-        "Filter inventory category",
-        options=inventory_categories,
-        default=inventory_categories,
-        key="inventory_category_filter",
-    )
+truck_cols = [
+    c for c in cerrejon_impact.columns
+    if isinstance(c, (int, np.integer))
+]
 
-with right_col:
+active_truck_cols = [
+    c for c in truck_cols
+    if c in active_dts
+]
 
-    filtered_inventory_df = cerrejon_impact[
-        cerrejon_impact["Category Item"]
-        .astype(str)
-        .str.strip()
-        .isin([x.strip() for x in selected_inventory_categories])
-    ].copy()
+truck_part_totals = (
+    filtered_inventory_df[active_truck_cols]
+    .apply(pd.to_numeric, errors="coerce")
+    .fillna(0)
+    .sum()
+    .reset_index()
+)
 
-    truck_cols = [
-        c for c in cerrejon_impact.columns
-        if isinstance(c, (int, np.integer))
-    ]
+truck_part_totals.columns = ["Truck", "Required Parts"]
 
-    active_truck_cols = [
-        c for c in truck_cols
-        if c in active_dts
-    ]
+truck_part_totals = truck_part_totals.sort_values(
+    "Required Parts",
+    ascending=False
+)
 
-    truck_part_totals = (
-        filtered_inventory_df[active_truck_cols]
-        .apply(pd.to_numeric, errors="coerce")
-        .fillna(0)
-        .sum()
-        .reset_index()
-    )
+# ==========================================================
+# GRAPH
+# ==========================================================
+st.markdown(
+    '<div class="section-title">Cerrejon Inventory Impact — Required Parts by Truck</div>',
+    unsafe_allow_html=True
+)
 
-    truck_part_totals.columns = ["Truck", "Required Parts"]
-
-    truck_part_totals = truck_part_totals.sort_values(
+st.plotly_chart(
+    _bar_chart(
+        truck_part_totals,
+        "Truck",
         "Required Parts",
-        ascending=False
-    )
-
-    st.markdown(
-        '<div class="section-title">Cerrejon Inventory Impact — Required Parts by Truck</div>',
-        unsafe_allow_html=True
-    )
-
-    st.plotly_chart(
-        _bar_chart(
-            truck_part_totals,
-            "Truck",
-            "Required Parts",
-            "Total required parts by truck",
-            "Required parts"
-        ),
-        use_container_width=True,
-        config={"displayModeBar": False}
-    )
+        "Total required parts by truck",
+        "Required parts"
+    ),
+    use_container_width=True,
+    config={"displayModeBar": False}
+)
     total_cat_cer = _category_summary(cerrejon_impact, qty_col="Grand Total", value_col=cer_impact_col)
     _render_category_cards(total_cat_cer, "Category Item Mix — Total Fleet")
 
