@@ -1309,6 +1309,13 @@ with tab_inventory:
     ia, ib = st.columns(2)
         with ia:
 
+
+
+
+
+
+
+            
         st.markdown(
             f'<div class="kpi-card">'
             f'<div class="kpi-label">Total Inventory Impact</div>'
