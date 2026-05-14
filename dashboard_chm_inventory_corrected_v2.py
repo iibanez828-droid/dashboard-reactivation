@@ -1234,11 +1234,6 @@ with tab_gantt:
         st.markdown(f'<div class="kpi-card"><div class="kpi-label">Total Labour Hours</div><div class="kpi-value" style="font-size:1.45rem;">{gantt_df["Total Labour"].sum():,.0f}</div><div class="kpi-sub">across all trucks</div></div>', unsafe_allow_html=True)
 
 
-
-Rewritten INVENTORY ANALYSIS Tab
-
-Reemplaza COMPLETAMENTE el contenido actual de tu tab with tab_inventory: por este bloque limpio y correctamente indentado.
-
 # ═══════════════════════════════════════════════════════════════
 # INVENTORY ANALYSIS TAB
 # ═══════════════════════════════════════════════════════════════
