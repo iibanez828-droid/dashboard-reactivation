@@ -1373,50 +1373,159 @@ with tab_inventory:
     with kd:
         st.markdown(f'<div class="kpi-card"><div class="kpi-label">Not Catalogued</div><div class="kpi-value" style="font-size:1.45rem;">{truck_not_cat:,.0f}</div><div class="kpi-sub">parts</div></div>', unsafe_allow_html=True)
 
+
 # ═══════════════════════════════════════════════════════════════
-#  TAB 6 — INVENTORY TOTAL
+#  TAB 6 — KITS TABLE
 # ═══════════════════════════════════════════════════════════════
 with tab_inventory_total:
-    st.markdown('<div class="section-title">Inventory Total Table</div>', unsafe_allow_html=True)
-    inv_tbl = inventory_total.copy()
+
+    st.markdown(
+        '<div class="section-title">Kits Inventory Table</div>',
+        unsafe_allow_html=True
+    )
+
+    # ==========================================================
+    # LOAD KITS TABLE
+    # ==========================================================
+    inv_tbl = kits.copy()
+
+    # Clean columns
+    inv_tbl.columns = (
+        inv_tbl.columns
+        .astype(str)
+        .str.strip()
+    )
+
+    # Remove empty rows
+    inv_tbl = inv_tbl.dropna(how="all")
+
+    # ==========================================================
+    # NUMERIC CONVERSION
+    # ==========================================================
     for col in ["QTY", "CHM Dealer price", "Total price"]:
         if col in inv_tbl.columns:
-            inv_tbl[col] = pd.to_numeric(inv_tbl[col], errors="coerce").fillna(0)
-    t1, t2, t3 = st.columns(3)
-    with t1:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-label">Rows</div><div class="kpi-value" style="font-size:1.45rem;">{len(inv_tbl):,.0f}</div></div>', unsafe_allow_html=True)
-    with t2:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-label">Total Quantity</div><div class="kpi-value" style="font-size:1.45rem;">{inv_tbl["QTY"].sum():,.0f}</div></div>', unsafe_allow_html=True)
-    with t3:
-        st.markdown(f'<div class="kpi-card"><div class="kpi-label">Total Price</div><div class="kpi-value" style="font-size:1.45rem;">${inv_tbl["Total price"].sum():,.0f}</div></div>', unsafe_allow_html=True)
+            inv_tbl[col] = (
+                pd.to_numeric(inv_tbl[col], errors="coerce")
+                .fillna(0)
+            )
 
-    inv_trucks = sorted([int(x) for x in inv_tbl["Truck"].dropna().unique()]) if "Truck" in inv_tbl.columns else []
-    selected_table_trucks = st.multiselect(
-        "Filter table by truck",
-        options=inv_trucks,
-        default=[],
-        format_func=lambda x: f"DT {x}",
-        key="inventory_total_truck_filter",
+    # ==========================================================
+    # KPIs
+    # ==========================================================
+    t1, t2, t3 = st.columns(3)
+
+    with t1:
+        st.markdown(
+            f'''
+            <div class="kpi-card">
+                <div class="kpi-label">Rows</div>
+                <div class="kpi-value" style="font-size:1.45rem;">
+                    {len(inv_tbl):,.0f}
+                </div>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
+
+    with t2:
+        st.markdown(
+            f'''
+            <div class="kpi-card">
+                <div class="kpi-label">Total Quantity</div>
+                <div class="kpi-value" style="font-size:1.45rem;">
+                    {inv_tbl["QTY"].sum():,.0f}
+                </div>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
+
+    with t3:
+        st.markdown(
+            f'''
+            <div class="kpi-card">
+                <div class="kpi-label">Total Price</div>
+                <div class="kpi-value" style="font-size:1.45rem;">
+                    ${inv_tbl["Total price"].sum():,.0f}
+                </div>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
+
+    # ==========================================================
+    # FILTER BY KIT NAME
+    # ==========================================================
+    kit_column = "Kits Name"
+
+    # Clean kit names
+    inv_tbl[kit_column] = (
+        inv_tbl[kit_column]
+        .astype(str)
+        .str.strip()
     )
-    display_inv = inv_tbl[inv_tbl["Truck"].isin(selected_table_trucks)].copy() if selected_table_trucks else inv_tbl.copy()
+
+    # Available kits
+    available_kits = sorted(
+        inv_tbl[kit_column]
+        .dropna()
+        .unique()
+    )
+
+    # Filter selector
+    selected_kits = st.multiselect(
+        "Filter table by Kit Name",
+        options=available_kits,
+        default=[],
+        key="inventory_total_kit_filter",
+    )
+
+    # Apply filter
+    display_inv = (
+        inv_tbl[
+            inv_tbl[kit_column]
+            .isin(selected_kits)
+        ].copy()
+        if selected_kits
+        else inv_tbl.copy()
+    )
+
+    # ==========================================================
+    # TABLE
+    # ==========================================================
     st.dataframe(
         display_inv,
         use_container_width=True,
         hide_index=True,
         column_config={
-            "CHM Dealer price": st.column_config.NumberColumn("CHM Dealer price", format="$%.2f"),
-            "Total price": st.column_config.NumberColumn("Total price", format="$%.2f"),
-            "QTY": st.column_config.NumberColumn("QTY", format="%.0f"),
+            "CHM Dealer price": st.column_config.NumberColumn(
+                "CHM Dealer price",
+                format="$%.2f"
+            ),
+            "Total price": st.column_config.NumberColumn(
+                "Total price",
+                format="$%.2f"
+            ),
+            "QTY": st.column_config.NumberColumn(
+                "QTY",
+                format="%.0f"
+            ),
         },
     )
+
+    # ==========================================================
+    # DOWNLOAD
+    # ==========================================================
     csv_data = display_inv.to_csv(index=False).encode("utf-8")
+
     st.download_button(
-        "Download Inventory Total CSV",
+        "Download Kits CSV",
         data=csv_data,
-        file_name="inventory_total_filtered.csv",
+        file_name="kits_filtered.csv",
         mime="text/csv",
         use_container_width=True,
     )
+
 
 # ─────────────────────────────────────────────────────────────────
 #  FOOTER
