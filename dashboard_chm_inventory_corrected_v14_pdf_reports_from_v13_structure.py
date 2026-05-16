@@ -21,6 +21,7 @@ from datetime import date
 from pathlib import Path
 from io import BytesIO
 import plotly.express as px
+import kaleido 
 
 # ─────────────────────────────────────────────────────────────────
 #  PATHS  (files sit next to this script)
