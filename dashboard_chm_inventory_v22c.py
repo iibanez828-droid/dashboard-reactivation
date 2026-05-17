@@ -707,7 +707,7 @@ def _make_page_template(logo_bytes=None, eh5000_bytes=None):
 
     # Header dimensions
     HDR_H    = 52   # total header height (pt)
-    EH_W     = 72   # EH5000 image width
+    EH_W     = 52   # EH5000 image width
     EH_H     = 30   # EH5000 image height
     LOGO_W   = 100  # Landcros logo width
     LOGO_H   = 28   # Landcros logo height
