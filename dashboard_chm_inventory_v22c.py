@@ -1683,7 +1683,7 @@ def build_dashboard_pdf(report_tab, include_all_tabs=False,
         alignment=TA_CENTER,
         textColor=colors.HexColor("#1A1A1A"),
         fontName="Helvetica-Bold",
-        fontSize=16,
+        fontSize=20,
         leading=20,
         spaceAfter=6,
     ))
