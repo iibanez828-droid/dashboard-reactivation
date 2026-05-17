@@ -736,7 +736,7 @@ def _make_page_template(logo_bytes=None, eh5000_bytes=None):
 
         # ── Centre text ──────────────────────────────────────────
         canvas.setFillColor(_GREY)
-        canvas.setFont("Helvetica-Bold", 8)
+        canvas.setFont("Helvetica-Bold", 14)
         canvas.drawCentredString(PAGE_W / 2, PAGE_H - 22,
                                  "Fleet Reactivation Analysis")
         canvas.setFont("Helvetica", 7)
@@ -1683,7 +1683,7 @@ def build_dashboard_pdf(report_tab, include_all_tabs=False,
         alignment=TA_CENTER,
         textColor=colors.HexColor("#1A1A1A"),
         fontName="Helvetica-Bold",
-        fontSize=20,
+        fontSize=16,
         leading=20,
         spaceAfter=6,
     ))
